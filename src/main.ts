@@ -7,7 +7,7 @@ import constants from './constant';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  
   app.enableCors();
 
   app.useGlobalPipes(new ValidationPipe());
@@ -25,7 +25,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  await app.listen(constants.PORT,()=>{
+  await app.listen(5000,()=>{
     console.log('server is running on PORT ', constants.PORT)
   });
 }
