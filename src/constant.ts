@@ -3,6 +3,7 @@ config();
 const constants = {
     PORT : process.env.PORT || 5000,
     MONGO_URI : process.env.MONGO_URI,
+    SECRET_KEY : process.env.SECRET_KEY
 };
 
 (function(){
