@@ -8,8 +8,8 @@ import constants from "src/constant";
 export class AdminService {
     constructor(@InjectModel(Admin.name) private Admin: Model<AdminDocument>){}
 
-    create(body:any){
-        body.password = bcrypt.hash(body.password,10);
+    async create(body:any){
+        body.password = await bcrypt.hash(body.password,10);
         return this.Admin.create(body)
     }
 
