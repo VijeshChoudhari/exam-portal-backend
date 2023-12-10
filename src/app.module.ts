@@ -7,6 +7,8 @@ import constants from './constant';
 import { SubjectModule } from './subjects/subject.module';
 import { UserModule } from './user/user.module';
 import { ReportModule } from './Report/report.module';
+import { TestModule } from './test/test.module';
+import { TestRequestModule } from './testRequest/testRequest.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { ReportModule } from './Report/report.module';
     UserModule,
     SubjectModule,
     ReportModule,
+    TestModule,
+    TestRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

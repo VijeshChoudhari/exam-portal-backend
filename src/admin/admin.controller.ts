@@ -1,7 +1,8 @@
 import { AdminService } from './admin.service';
-import { Body, Controller, Post } from '@nestjs/common/decorators';
-import { ApiTags } from '@nestjs/swagger/dist';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common/decorators';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger/dist';
 import { LoginAdminDto, SignupAdminDto } from './dto/admin.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
 @ApiTags('admin')
 @Controller('admin')
 export class AdminController {

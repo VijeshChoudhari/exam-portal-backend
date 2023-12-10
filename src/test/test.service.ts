@@ -1,5 +1,5 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Test, TestDocument } from './entities/test.entites';
 
 export class TestService {
@@ -7,5 +7,29 @@ export class TestService {
 
   createTest(data: any) {
     return this.Test.create(data);
+  }
+  getTestsOfSubject(subjectId: Types.ObjectId) {
+    return this.Test.find({ subjectId: subjectId });
+  }
+
+  getTestDetailByTestId(testId: Types.ObjectId) {
+    return this.Test.aggregate([
+      {
+        $match: {
+          _id: testId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'subjects',
+          localField: 'subjectId',
+          foreignField: '_id',
+          as: 'subject',
+        },
+      },
+      {
+        $unwind: '$subject',
+      },
+    ]);
   }
 }

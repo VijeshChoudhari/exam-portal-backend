@@ -1,18 +1,21 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SubjectService } from './subject.service';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import {
   AddQuestionDto,
   CreateSubjectDto,
   GetAllSubjectDto,
 } from './dto/subject.dto';
 import { Types } from 'mongoose';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @ApiTags('subject')
 @Controller('subject')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT')
   @Post('create')
   async createSubject(@Body() body: CreateSubjectDto) {
     try {
@@ -42,6 +45,8 @@ export class SubjectController {
     }
   }
 
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT')
   @Post('add-question')
   async addQuestions(@Body() body: AddQuestionDto) {
     try {
