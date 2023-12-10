@@ -29,6 +29,9 @@ export class Report {
 
   @Prop({ required: true, type: String })
   percentage: string;
+
+  @Prop({ required: true, type: String })
+  resultStatus: string;
 }
 
 export const ReportSchema = SchemaFactory.createForClass(Report);

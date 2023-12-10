@@ -66,6 +66,9 @@ export class ReportService {
 
     wrongAnsCount = totalQuestionsCount - correctAnsCount;
 
+    const percentage = (correctAnsCount / totalQuestionsCount) * 100;
+    const status = percentage > 70.0 ? 'passed' : 'failed';
+
     const reportData = {
       userId: userId,
       userName: userFirstName + ' ' + userLastName,
@@ -76,6 +79,8 @@ export class ReportService {
       wrongAnsCount: wrongAnsCount,
       percentage:
         ((correctAnsCount / totalQuestionsCount) * 100).toString() + '%',
+
+      resultStatus: status,
     };
 
     return this.Report.create(reportData);
