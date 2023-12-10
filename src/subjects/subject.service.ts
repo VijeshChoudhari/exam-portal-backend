@@ -28,6 +28,26 @@ export class SubjectService {
               },
             },
             {
+              $lookup: {
+                from: 'tests',
+                localField: '_id',
+                foreignField: 'subjectId',
+                as: 'result',
+              },
+            },
+            {
+              $addFields: {
+                testCount: { $size: '$result' },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                testCount: 1,
+              },
+            },
+            {
               $sort: { updatedAt: -1 },
             },
             {
@@ -43,7 +63,7 @@ export class SubjectService {
                 $or: [
                   {
                     name: {
-                      $regex: new RegExp(search, 'i'),
+                      $regex: new RegExp('', 'i'),
                     },
                   },
                 ],
@@ -57,9 +77,11 @@ export class SubjectService {
   }
 
   async addQuestion(subjectId: Types.ObjectId, data: any[]) {
+    const resp = await this.Subject.findById(subjectId);
+    const questions = [...resp?.questions, ...data];
     return this.Subject.findByIdAndUpdate(
       subjectId,
-      { $push: { questions: data } },
+      { questions: questions },
       { new: true },
     );
   }

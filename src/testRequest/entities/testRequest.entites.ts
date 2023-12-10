@@ -11,6 +11,9 @@ export class TestRequest {
   @Prop({ required: true, type: Types.ObjectId })
   userId: Types.ObjectId;
 
+  @Prop({ required: true, type: Number })
+  testNumber: number;
+
   @Prop({ required: true, type: Boolean })
   approvalPending: boolean;
 
