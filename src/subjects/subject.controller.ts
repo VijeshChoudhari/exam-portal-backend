@@ -14,8 +14,8 @@ import { AuthGuard } from 'src/guards/auth.guard';
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('JWT')
+  //   @UseGuards(AuthGuard)
+  //   @ApiBearerAuth('JWT')
   @Post('create')
   async createSubject(@Body() body: CreateSubjectDto) {
     try {
@@ -45,8 +45,8 @@ export class SubjectController {
     }
   }
 
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('JWT')
+  //   @UseGuards(AuthGuard)
+  //   @ApiBearerAuth('JWT')
   @Post('add-question')
   async addQuestions(@Body() body: AddQuestionDto) {
     try {

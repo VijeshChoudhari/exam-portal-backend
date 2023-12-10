@@ -61,8 +61,8 @@ export class TestRequestController {
     }
   }
 
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('JWT')
+  //   @UseGuards(AuthGuard)
+  //   @ApiBearerAuth('JWT')
   @Post('update')
   async updateTestRequest(@Body() body: any) {
     try {
@@ -82,7 +82,7 @@ export class TestRequestController {
         {
           approvalStatus: approvalStatus,
           approvalPending: false,
-          testNumber,
+          testNumber: testNumber,
         },
       );
       if (body.status) {
@@ -103,6 +103,7 @@ export class TestRequestController {
         message: body.status ? 'Approved' : 'Rejected',
       };
     } catch (error) {
+      console.log(error);
       console.log(
         JSON.stringify({
           method: 'update TestRequest',
@@ -203,6 +204,38 @@ export class TestRequestController {
     } catch (error) {
       console.log(error);
       return { expStatus: true, Msg: 'Token is expired' };
+    }
+  }
+
+  @Get('list')
+  async getTestRequestList() {
+    try {
+      let resp = await this.testRequestService.getList();
+      resp[0].subject = resp[0].subject.name;
+      resp[0].user = {
+        name: resp[0].user.firstName + ' ' + resp[0].user.lastName,
+      };
+      return {
+        data: resp[0],
+        code: 200,
+        error: null,
+        message: 'success',
+      };
+    } catch (error) {
+      console.log(
+        JSON.stringify({
+          method: 'create Test',
+          error: error.message,
+          message: 'final catch error',
+        }),
+      );
+
+      return {
+        error: error,
+        message: error.message || 'something went wrong',
+        data: null,
+        code: 400,
+      };
     }
   }
 }

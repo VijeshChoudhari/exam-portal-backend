@@ -36,6 +36,9 @@ export class ResponseAnsDto {
   @IsNotEmpty()
   @ApiProperty({ required: true })
   readonly responseAns: string;
+
+  @ApiProperty({ required: true })
+  readonly options: Array<string>;
 }
 
 // export class CreateSubjectDto {

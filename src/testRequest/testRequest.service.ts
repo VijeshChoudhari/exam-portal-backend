@@ -7,6 +7,7 @@ import { Model, Types } from 'mongoose';
 import constants from 'src/constant';
 import * as nodemailer from 'nodemailer';
 import { sign } from 'jsonwebtoken';
+import { Report, ReportDocument } from 'src/Report/entities/report.entities';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', // e.g., 'gmail', 'hotmail', etc.
@@ -19,6 +20,8 @@ export class TestRequestService {
   constructor(
     @InjectModel(TestRequest.name)
     private TestRequest: Model<TestRequestDocument>,
+    @InjectModel(Report.name)
+    private Report: Model<ReportDocument>,
   ) {}
 
   createNewRequest(userId: Types.ObjectId, subjectId: Types.ObjectId) {
@@ -33,8 +36,16 @@ export class TestRequestService {
 
   async isValidForTest(userId: Types.ObjectId, subjectId: Types.ObjectId) {
     const oneMonthAgo = new Date();
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() - 1);
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-    // const oneDay = await this.TestRequest.findOne({})
+    const oneDay = await this.Report.findOne({
+      userId: userId,
+      createdAt: { $gt: new Date(currentDate.toString()) },
+    });
+    if (oneDay) {
+      return false;
+    }
     const resp = await this.TestRequest.find({
       subjectId: { $eq: subjectId },
       userId: { $eq: userId },
@@ -165,14 +176,58 @@ export class TestRequestService {
         },
       },
       {
+        $lookup: {
+          from: 'subjects',
+          localField: 'subjectId',
+          foreignField: '_id',
+          as: 'subject',
+        },
+      },
+      {
+        $unwind: '$subject',
+      },
+      {
         $unwind: '$test',
       },
     ]);
     const token = sign(
-      { testRequestId: resp[0]._id, testId: resp[0].test._id },
+      {
+        testRequestId: resp[0]._id,
+        testId: resp[0].test._id,
+        userId: resp[0].userId,
+        subjectId: resp[0].subject._id,
+        subjectName: resp[0].subject.name,
+      },
       constants.SECRET_KEY,
       { expiresIn: '1hr' },
     );
     return token;
+  }
+
+  async getList() {
+    return this.TestRequest.aggregate([
+      {
+        $lookup: {
+          from: 'subjects',
+          localField: 'subjectId',
+          foreignField: '_id',
+          as: 'subject',
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$subject',
+      },
+      {
+        $unwind: '$user',
+      },
+    ]);
   }
 }
