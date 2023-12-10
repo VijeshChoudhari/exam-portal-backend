@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Report, ReportDocument } from './entities/report.entities';
 import { Subject, SubjectDocument } from 'src/subjects/entites/subject.entites';
+import { User, UserDocument } from 'src/user/entities/user.entities';
 
 // import {sign} from "jsonwebtoken"
 // import constants from "src/constant";
@@ -13,6 +14,7 @@ export class ReportService {
   constructor(
     @InjectModel(Report.name) private Report: Model<ReportDocument>,
     @InjectModel(Subject.name) private Subject: Model<SubjectDocument>,
+    @InjectModel(User.name) private User: Model<UserDocument>,
   ) {}
 
   async create(body: any) {
@@ -37,6 +39,14 @@ export class ReportService {
       _id: new Types.ObjectId(subjectId),
     });
 
+    const userData = await this.User.findOne({
+      _id: new Types.ObjectId(userId),
+    });
+
+    const userFirstName = userData.firstName;
+    const userLastName = userData.lastName;
+
+    const subjectName = subjectData.name;
     const questionBank = subjectData.questions;
     const totalQuestionsCount = questionBank.length;
 
@@ -58,7 +68,9 @@ export class ReportService {
 
     const reportData = {
       userId: userId,
+      userName: userFirstName + ' ' + userLastName,
       subjectId: subjectId,
+      subjectName: subjectName,
       testRequestId: testRequestId,
       correctAnsCount: correctAnsCount,
       wrongAnsCount: wrongAnsCount,

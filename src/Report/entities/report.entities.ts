@@ -10,7 +10,13 @@ export class Report {
   userId: Types.ObjectId;
 
   @Prop({ required: true, type: Types.ObjectId })
+  userName: string;
+
+  @Prop({ required: true, type: Types.ObjectId })
   subjectId: Types.ObjectId;
+
+  @Prop({ required: true, type: Types.ObjectId })
+  subjectName: string;
 
   @Prop({ required: true, type: Types.ObjectId })
   testRequestId: Types.ObjectId;
