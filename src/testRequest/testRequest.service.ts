@@ -93,10 +93,14 @@ export class TestRequestService {
     ]);
   }
 
-  sendApprovedTestLink(body: any, testRequestId: string, subjectName: string) {
+  sendApprovedTestLink(
+    email: string,
+    testRequestId: string,
+    subjectName: string,
+  ) {
     const mailOptions = {
       from: constants.TRANSPORTER_EMAIL,
-      to: body.email,
+      to: email,
       subject: 'Test Link',
       text: `Click this link to view Test: http://localhost:3000/exam/${subjectName}/${testRequestId}`,
     };
@@ -136,8 +140,8 @@ export class TestRequestService {
     const durartion = 1800;
     const currentTime = new Date().getTime() / 1000;
     const remainingTime =
-      new Date(resp.updatedAt).getTime() / 1000 - currentTime;
-    if (remainingTime >= durartion) {
+      currentTime - new Date(resp.updatedAt).getTime() / 1000;
+    if (remainingTime < durartion && resp.approvalStatus) {
       return false;
     } else {
       return true;
@@ -217,8 +221,24 @@ export class TestRequestService {
       {
         $lookup: {
           from: 'users',
-          localField: 'userId',
-          foreignField: '_id',
+          let: { userId: '$userId' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$_id', '$$userId'],
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                firstName: 1,
+                lastName: 1,
+                email: 1,
+              },
+            },
+          ],
           as: 'user',
         },
       },

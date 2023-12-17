@@ -12,7 +12,7 @@ export class TestRequest {
   userId: Types.ObjectId;
 
   @Prop({ required: true, type: Number })
-  testNumber: Number;
+  testNumber: number;
 
   @Prop({ required: true, type: Boolean })
   approvalPending: boolean;

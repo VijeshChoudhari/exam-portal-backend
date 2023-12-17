@@ -48,17 +48,17 @@ export class ReportService {
 
     const subjectName = subjectData.name;
     const questionBank = subjectData.questions;
-    const totalQuestionsCount = questionBank.length;
+    const totalQuestionsCount = userResponse.length;
 
     let correctAnsCount = 0,
       wrongAnsCount = 0;
 
     for (let i = 0; i < userResponseCount; i++) {
       console.log('q', questionBank[userResponse[i].questionNo - 1].answer);
-      console.log('a', userResponse[i].answer);
+      console.log('a', userResponse[i].responseAns);
       if (
         questionBank[userResponse[i].questionNo - 1].answer ===
-        userResponse[i].answer
+        userResponse[i].responseAns
       ) {
         correctAnsCount++;
       }
@@ -78,7 +78,8 @@ export class ReportService {
       correctAnsCount: correctAnsCount,
       wrongAnsCount: wrongAnsCount,
       percentage:
-        ((correctAnsCount / totalQuestionsCount) * 100).toString() + '%',
+        ((correctAnsCount / totalQuestionsCount) * 100).toFixed(0).toString() +
+        '%',
 
       resultStatus: status,
     };

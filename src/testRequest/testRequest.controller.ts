@@ -25,7 +25,7 @@ export class TestRequestController {
   async createTestRequest(@Body() body: any, @Req() req: any) {
     try {
       const subjectId = new Types.ObjectId(body.subjectId);
-      const userId = new Types.ObjectId(req.payload.userId);
+      const userId = new Types.ObjectId(req.payload._id);
       const limitExceeded = await this.testRequestService.isValidForTest(
         userId,
         subjectId,
@@ -61,8 +61,8 @@ export class TestRequestController {
     }
   }
 
-  //   @UseGuards(AuthGuard)
-  //   @ApiBearerAuth('JWT')
+  // @UseGuards(AuthGuard)
+  // @ApiBearerAuth('JWT')
   @Post('update')
   async updateTestRequest(@Body() body: any) {
     try {
@@ -74,9 +74,11 @@ export class TestRequestController {
       if (body.status) {
         approvalStatus = true;
         if (allTests.length > 0) {
-          testNumber = Math.floor(Math.random() * allTests[0].length) + 1;
+          testNumber =
+            Math.floor(Math.random() * (allTests[0].tests.length - 1 + 1)) + 1;
         }
       }
+
       const resp = await this.testRequestService.updateRequest(
         new Types.ObjectId(body.testRequestId),
         {
@@ -87,7 +89,7 @@ export class TestRequestController {
       );
       if (body.status) {
         this.testRequestService.sendApprovedTestLink(
-          { email: allTests[0].user.email },
+          allTests[0].user.email,
           body.testRequestId,
           body.subjectName,
         );
@@ -127,25 +129,15 @@ export class TestRequestController {
       const isLinkValid = await this.testRequestService.checkLinkValidation(
         new Types.ObjectId(testId),
       );
-      if (!isLinkValid) {
-        return {
-          data: {
-            expired: true,
-          },
-          error: null,
-          message: 'success',
-          code: 200,
-        };
-      } else {
-        return {
-          data: {
-            expired: false,
-          },
-          error: null,
-          message: 'success',
-          code: 200,
-        };
-      }
+
+      return {
+        data: {
+          expired: isLinkValid,
+        },
+        error: null,
+        message: 'success',
+        code: 200,
+      };
     } catch (error) {
       console.log(
         JSON.stringify({
@@ -197,9 +189,7 @@ export class TestRequestController {
   @Post('testLink-status')
   async checkLinkStatus(@Body() body: any) {
     try {
-      const isValid = verify(body.token, constants.SECRET_KEY, {
-        complete: true,
-      });
+      const isValid = verify(body.token, constants.SECRET_KEY);
       return { expStatus: false, data: isValid };
     } catch (error) {
       console.log(error);
@@ -207,16 +197,12 @@ export class TestRequestController {
     }
   }
 
-  @Get('list')
+  @Get('get-all')
   async getTestRequestList() {
     try {
       let resp = await this.testRequestService.getList();
-      resp[0].subject = resp[0].subject.name;
-      resp[0].user = {
-        name: resp[0].user.firstName + ' ' + resp[0].user.lastName,
-      };
       return {
-        data: resp[0],
+        data: resp,
         code: 200,
         error: null,
         message: 'success',

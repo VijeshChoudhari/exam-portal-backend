@@ -11,6 +11,7 @@ export class ReportController {
   @Post('create')
   async signup(@Body() body: CreateReportDto) {
     try {
+      console.log('body is this ', body);
       const resp = await this.reportService.create(body);
       return {
         data: resp,
